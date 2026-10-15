@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Untuk Kamu Yang Spesial ✨ - Pesan Emote Interaktif</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Poppins & Dancing Script -->
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <!-- YouTube IFrame API -->
+    <script src="https://www.youtube.com/iframe_api"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        poppins: ['Poppins', 'sans-serif'],
+                        dancing: ['Dancing Script', 'cursive'],
+                    },
+                    animation: {
+                        'float': 'float 3.5s ease-in-out infinite',
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'bounce-slight': 'bounceSlight 2s infinite',
+                        'spin-slow': 'spin 12s linear infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0px) rotate(0deg)' },
+                            '50%': { transform: 'translateY(-12px) rotate(2deg)' },
+                        },
+                        bounceSlight: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-6px)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #fce7f3 0%, #f3e8ff 50%, #e0e7ff 100%);
+            min-height: 100vh;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.7);
+        }
+        .glass-dark {
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #f472b6;
+            border-radius: 9999px;
+        }
+    </style>
+</head>
+<body class="text-slate-700 antialiased flex flex-col min-h-screen relative overflow-x-hidden">
+
+    <!-- Floating Background Particles Decorative -->
+    <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+        <div class="absolute top-10 left-10 text-pink-300 opacity-40 text-2xl animate-float" style="animation-delay: 0s;">✨</div>
+        <div class="absolute top-1/4 right-12 text-pink-400 opacity-30 text-3xl animate-float" style="animation-delay: 1s;">💖</div>
+        <div class="absolute bottom-20 left-16 text-rose-300 opacity-30 text-3xl animate-float" style="animation-delay: 2s;">🌸</div>
+        <div class="absolute bottom-1/3 right-1/4 text-purple-300 opacity-40 text-2xl animate-float" style="animation-delay: 1.5s;">✨</div>
+    </div>
+
+    <!-- Header / Navbar -->
+    <header class="py-4 px-6 glass-card sticky top-0 z-40 shadow-sm flex justify-between items-center">
+        <div class="flex items-center space-x-3 cursor-pointer" onclick="resetToHome()">
+            <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-pink-400 via-rose-400 to-purple-500 flex items-center justify-center text-white shadow-md shadow-pink-200">
+                <i class="fa-solid fa-heart text-lg"></i>
+            </div>
+            <div>
+                <h1 class="font-bold text-lg bg-gradient-to-r from-pink-500 via-rose-500 to-purple-600 bg-clip-text text-transparent">EmotePesan</h1>
+                <p class="text-[11px] text-slate-500 font-medium">Ungkapan Spesial Untukmu</p>
+            </div>
+        </div>
+        <button onclick="openSettingsModal()" class="px-4 py-2 text-xs md:text-sm font-semibold rounded-full bg-gradient-to-r from-pink-500 to-rose-500 text-white shadow-md shadow-pink-200 hover:opacity-95 transition flex items-center space-x-2">
+            <i class="fa-solid fa-sliders"></i>
+            <span class="hidden sm:inline">Atur Pesan, Foto & Lagu</span>
+            <span class="sm:hidden">Pengaturan</span>
+        </button>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="flex-grow container mx-auto px-4 py-8 max-w-4xl z-10 flex flex-col justify-center">
+
+        <!-- ==================== MAIN PAGE: UNTUK KAMU YANG SPESIAL ==================== -->
+        <section id="homeSection" class="space-y-8 my-auto text-center py-6">
+            
+            <div class="space-y-3 animate-fade-in max-w-2xl mx-auto">
+                <span class="inline-flex items-center px-4 py-1.5 bg-pink-100 text-pink-600 rounded-full text-xs font-bold tracking-wide uppercase shadow-sm border border-pink-200/60">
+                    <i class="fa-solid fa-sparkles mr-1.5 text-pink-500"></i> Kartu Pesan Interaktif
+                </span>
+                <h2 class="text-3xl md:text-5xl font-bold font-dancing text-slate-800 drop-shadow-sm bg-gradient-to-r from-pink-600 via-rose-600 to-purple-700 bg-clip-text text-transparent py-1">
+                    Untuk Kamu Yang Spesial ✨
+                </h2>
+                <p class="text-slate-600 text-sm md:text-base leading-relaxed">
+                    Pilih salah satu emote manis di bawah ini untuk melihat kejutan pesan dan melodi indah yang telah disiapkan!
+                </p>
+            </div>
+
+            <!-- 3 MAIN EMOTE CHOICES -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-3xl mx-auto pt-4">
+                
+                <!-- Emote 1: Amplop Cinta -->
+              
+
+                <!-- Emote 2: Kado Kejutan -->
+                <div onclick="selectAndOpenEmote('envelope', '💌 Amplop Cinta')" class="group cursor-pointer glass-card rounded-3xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border-2 border-pink-200/80 hover:border-pink-400 flex flex-col items-center justify-between relative overflow-hidden">
+                    <div class="absolute -top-16 -right-12 w-24 h-24 bg-rose-200/50 rounded-full blur-xl group-hover:bg-rose-300/60 transition"></div>
+                    <div class="w-24 h-24 rounded-2xl bg-gradient-to-tr from-rose-100 to-pink-50 flex items-center justify-center text-6xl shadow-inner group-hover:scale-110 transition duration-300 my-2">
+                        💌
+                    </div>
+                    <div class="mt-4 space-y-1">
+                        <h3 class="font-bold text-slate-800 text-lg group-hover:text-pink-600 transition">Kado Kejutan</h3>
+                        <p class="text-xs text-slate-500">Unboxing momen hangat spesial</p>
+                    </div>
+                    <span class="mt-4 px-4 py-1.5 rounded-full bg-pink-50 text-pink-600 text-xs font-semibold group-hover:bg-pink-500 group-hover:text-white transition">
+                        Buka Kado <i class="fa-solid fa-arrow-right text-[10px] ml-1"></i>
+                    </span>
+                </div>
+
+                <!-- Emote 3: Hati Bersinar -->
+              
+
+            </div>
+
+        </section>
+
+
+        <!-- ==================== DISPLAY CARD VIEW MODAL ==================== -->
+        <section id="openedCardSection" class="hidden flex flex-col items-center justify-center my-auto py-4 animate-fade-in">
+            <div class="w-full max-w-lg transition-all duration-500 transform">
+                
+                <!-- Aesthetic Card Container -->
+                <div class="relative rounded-3xl overflow-hidden shadow-2xl border-4 border-white glass-dark text-white min-h-[500px] flex flex-col justify-between p-6 md:p-8">
+                    
+                    <!-- Background Image Layer -->
+                    <div class="absolute inset-0 z-0">
+                        <img id="cardBgImage" src="https://images.unsplash.com/photo-1518199266791-5375a83190b7?auto=format&fit=crop&w=800&q=80" alt="Background Foto" class="w-full h-full object-cover">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/50 to-black/30 backdrop-blur-[2px]"></div>
+                    </div>
+
+                    <!-- Card Header -->
+                    <div class="relative z-10 flex justify-between items-start">
+                        <div>
+                            <span class="px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-[11px] font-semibold tracking-wider uppercase text-pink-200 border border-white/20 flex items-center w-fit space-x-1">
+                                <span id="cardEmoteHeaderIcon">💌</span>
+                                <span id="cardEmoteHeaderTitle">Amplop Cinta</span>
+                            </span>
+                            <h2 id="cardDisplayTitle" class="text-2xl md:text-3xl font-bold font-dancing mt-2 text-pink-100 drop-shadow-md">
+                                Untuk Kamu Yang Spesial ✨
+                            </h2>
+                        </div>
+                        
+                        <!-- Floating Music Play/Pause Toggle -->
+                        <button onclick="toggleMusicPlayback()" id="musicToggleButton" title="Putar/Jeda Musik" class="w-11 h-11 rounded-full bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center text-white hover:bg-white/40 transition shadow-lg transform active:scale-95">
+                            <i id="musicIcon" class="fa-solid fa-music"></i>
+                        </button>
+                    </div>
+
+                    <!-- Card Body Message -->
+                    <div class="relative z-10 my-6 py-5 px-6 bg-black/40 backdrop-blur-md rounded-2xl border border-white/15 shadow-2xl">
+                        <p id="cardDisplayMessage" class="text-sm md:text-base leading-relaxed text-slate-100 font-poppins italic">
+                            "Semoga harimu dipenuhi dengan kebahagiaan, senyuman hangat, dan cinta yang tulus. Kamu berhak mendapatkan hal-hal terindah di dunia ini."
+                        </p>
+                        <div class="mt-4 text-right">
+                            <span id="cardDisplaySender" class="text-base md:text-lg font-semibold text-pink-300 font-dancing">
+                                ~ Dari yang Tersayang ❤️
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Card Footer Actions -->
+                    <div class="relative z-10 flex flex-wrap items-center justify-between gap-2 pt-3 border-t border-white/15">
+                        <button onclick="resetToHome()" class="px-4 py-2 bg-white/15 hover:bg-white/25 text-xs font-medium rounded-xl backdrop-blur-md border border-white/20 transition flex items-center space-x-1">
+                            <i class="fa-solid fa-arrow-left text-[10px]"></i>
+                            <span>Tutup Pesan</span>
+                        </button>
+                        <div class="flex items-center space-x-2">
+                            <button onclick="openSettingsModal()" class="px-3 py-2 bg-white/10 hover:bg-white/20 text-xs font-medium rounded-xl border border-white/20 transition">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </button>
+                            <button onclick="shareCardLink()" class="px-4 py-2 bg-pink-500 hover:bg-pink-600 text-xs font-semibold rounded-xl text-white shadow-lg shadow-pink-500/30 transition flex items-center space-x-1">
+                                <i class="fa-solid fa-share-nodes"></i>
+                                <span>Bagikan</span>
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="text-center py-4 text-xs text-slate-500 z-10">
+        Dibuat dengan ❤️ &copy; 2026 EmotePesan Interaktif
+    </footer>
+
+
+    <!-- ==================== QUICK SETTINGS MODAL ==================== -->
+    <div id="settingsModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="glass-card w-full max-w-lg rounded-3xl p-6 md:p-8 shadow-2xl space-y-6 max-h-[90vh] overflow-y-auto border border-white/80">
+            
+            <div class="flex justify-between items-center border-b border-slate-200/80 pb-4">
+                <div class="flex items-center space-x-2">
+                    <div class="w-8 h-8 rounded-xl bg-pink-100 text-pink-600 flex items-center justify-center">
+                        <i class="fa-solid fa-sliders"></i>
+                    </div>
+                    <h3 class="font-bold text-slate-800 text-base md:text-lg">Atur Pesan, Foto & Lagu</h3>
+                </div>
+                <button onclick="closeSettingsModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center transition">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="space-y-4">
+                <!-- 1. Text Customization -->
+                <div class="space-y-3">
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-500">1. Teks Pesan</label>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-600 mb-1" for="modalTitleInput">Judul / Penerima</label>
+                        <input type="text" id="modalTitleInput" placeholder="Contoh: Untuk Kamu Yang Spesial ✨" class="w-full px-3 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-pink-400 text-xs bg-white">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-600 mb-1" for="modalSenderInput">Pengirim</label>
+                        <input type="text" id="modalSenderInput" placeholder="Contoh: Dari yang Tersayang ❤️" class="w-full px-3 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-pink-400 text-xs bg-white">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-600 mb-1" for="modalMessageInput">Isi Kata-Kata Pesan</label>
+                        <textarea id="modalMessageInput" rows="3" placeholder="Tulis ungkapan atau doa manismu..." class="w-full px-3 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-pink-400 text-xs bg-white resize-none"></textarea>
+                    </div>
+                </div>
+
+                <!-- 2. Dual Option Background Selection -->
+                <div class="space-y-3 pt-2 border-t border-slate-200/80">
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-500">2. Foto Latar Belakang (Dual Option)</label>
+                    
+                    <!-- Tabs for Photo Option -->
+                    <div class="flex space-x-2 border-b border-slate-200 text-xs">
+                        <button type="button" onclick="switchBgTab('upload')" id="bgTabUpload" class="pb-2 font-medium text-pink-600 border-b-2 border-pink-500">Unggah File HP/PC</button>
+                        <button type="button" onclick="switchBgTab('preset')" id="bgTabPreset" class="pb-2 font-medium text-slate-400 hover:text-slate-600">Preset / URL Foto</button>
+                    </div>
+
+                    <!-- Option A: File Upload -->
+                    <div id="bgOptionUpload" class="space-y-2">
+                        <label for="modalBgFileInput" class="flex flex-col items-center justify-center border-2 border-dashed border-slate-300 rounded-2xl p-4 cursor-pointer hover:border-pink-400 bg-white/60 transition">
+                            <i class="fa-solid fa-cloud-arrow-up text-xl text-pink-500 mb-1"></i>
+                            <span class="text-xs font-medium text-slate-600" id="modalUploadBgLabel">Pilih Foto dari Galeri HP / PC</span>
+                            <span class="text-[10px] text-slate-400">Format: JPG, PNG, WEBP</span>
+                            <input type="file" id="modalBgFileInput" accept="image/*" class="hidden" onchange="handleModalBgUpload(event)">
+                        </label>
+                    </div>
+
+                    <!-- Option B: Presets & URL -->
+                    <div id="bgOptionPreset" class="space-y-2 hidden">
+                        <label class="text-[11px] text-slate-500 block">Atau Pilih Wallpaper Preset Estetik:</label>
+                        <div class="grid grid-cols-3 gap-2">
+                            <img src="https://images.unsplash.com/photo-1518199266791-5375a83190b7?auto=format&fit=crop&w=400&q=80" onclick="selectPresetModalBg(this.src)" class="w-full h-14 object-cover rounded-xl cursor-pointer border-2 border-transparent hover:border-pink-500 transition shadow-sm">
+                            <img src="https://images.unsplash.com/photo-1490730141103-6cac27aaab94?auto=format&fit=crop&w=400&q=80" onclick="selectPresetModalBg(this.src)" class="w-full h-14 object-cover rounded-xl cursor-pointer border-2 border-transparent hover:border-pink-500 transition shadow-sm">
+                            <img src="https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=400&q=80" onclick="selectPresetModalBg(this.src)" class="w-full h-14 object-cover rounded-xl cursor-pointer border-2 border-transparent hover:border-pink-500 transition shadow-sm">
+                        </div>
+                        <div class="pt-1">
+                            <input type="text" id="modalBgUrlInput" placeholder="Atau Tempel URL Gambar (https://...)" class="w-full px-3 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-pink-400 text-xs bg-white" onchange="applyUrlBg(this.value)">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. Dual Option Music Selection -->
+                <div class="space-y-3 pt-2 border-t border-slate-200/80">
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-500">3. Musik Pengiring (Dual Option)</label>
+
+                    <!-- Tabs for Music Option -->
+                    <div class="flex space-x-2 border-b border-slate-200 text-xs">
+                        <button type="button" onclick="switchMusicTab('youtube')" id="musicTabYoutube" class="pb-2 font-medium text-pink-600 border-b-2 border-pink-500">Link YouTube</button>
+                        <button type="button" onclick="switchMusicTab('file')" id="musicTabFile" class="pb-2 font-medium text-slate-400 hover:text-slate-600">Unggah File MP3 / Audio</button>
+                    </div>
+
+                    <!-- Option A: YouTube Link -->
+                    <div id="musicOptionYoutube" class="space-y-2">
+                        <label class="block text-xs font-medium text-slate-600 mb-1" for="modalYoutubeInput">Link Video YouTube Musik / Lagu</label>
+                        <div class="flex items-center space-x-2">
+                            <div class="relative flex-grow">
+                                <i class="fa-brands fa-youtube absolute left-3 top-2.5 text-rose-500 text-sm"></i>
+                                <input type="text" id="modalYoutubeInput" placeholder="https://www.youtube.com/watch?v=..." class="w-full pl-9 pr-3 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-pink-400 text-xs bg-white">
+                            </div>
+                        </div>
+                        <p class="text-[10px] text-slate-400">Contoh: Musik akustik, instrumen romantis, atau lagu favorit pilihanmu.</p>
+                    </div>
+
+                    <!-- Option B: Audio File Upload -->
+                    <div id="musicOptionFile" class="space-y-2 hidden">
+                        <label for="modalAudioFileInput" class="flex flex-col items-center justify-center border-2 border-dashed border-slate-300 rounded-2xl p-4 cursor-pointer hover:border-pink-400 bg-white/60 transition">
+                            <i class="fa-solid fa-music text-xl text-pink-500 mb-1"></i>
+                            <span class="text-xs font-medium text-slate-600" id="modalUploadAudioLabel">Pilih File Lagu MP3 Sendiri</span>
+                            <span class="text-[10px] text-slate-400">Format: MP3, WAV, M4A</span>
+                            <input type="file" id="modalAudioFileInput" accept="audio/*" class="hidden" onchange="handleModalAudioUpload(event)">
+                        </label>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Modal Action Buttons -->
+            <div class="pt-4 flex items-center justify-end space-x-3 border-t border-slate-200/80">
+                <button onclick="closeSettingsModal()" class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 font-semibold text-xs transition">
+                    Batal
+                </button>
+                <button onclick="saveSettingsModal()" class="px-5 py-2 rounded-xl bg-gradient-to-r from-pink-500 to-rose-500 text-white font-semibold text-xs shadow-md shadow-pink-200 hover:opacity-95 transition">
+                    Simpan Perubahan
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Hidden Container for YouTube Player IFrame -->
+    <div id="ytPlayerContainer" class="hidden pointer-events-none w-0 h-0 overflow-hidden">
+        <div id="youtubeAudioPlayer"></div>
+    </div>
+
+    <!-- Hidden HTML Audio Element for Local MP3 File -->
+    <audio id="localAudioPlayer" loop class="hidden"></audio>
+
+
+    <!-- JavaScript Application Core Logic -->
+    <script>
+        // Application Global State
+        let appState = {
+            title: 'Untuk Kamu Yang Spesial ✨',
+            sender: 'Dari yang Tersayang ❤️',
+            message: 'Semoga harimu dipenuhi dengan kebahagiaan, senyuman hangat, dan cinta yang tulus. Kamu berhak mendapatkan hal-hal terindah di dunia ini.',
+            bgImage: 'https://images.unsplash.com/photo-1518199266791-5375a83190b7?auto=format&fit=crop&w=800&q=80',
+            
+            // Music state
+            musicSourceType: 'youtube', // 'youtube' or 'file'
+            youtubeUrl: 'https://www.youtube.com/watch?v=2Vv-BfVoq4g', // Default romantic background track
+            youtubeVideoId: '2Vv-BfVoq4g',
+            localAudioUrl: null,
+            localAudioFileName: null,
+            
+            // Playback status
+            isPlaying: false,
+            currentActiveEmote: 'envelope',
+            currentActiveEmoteTitle: '💌 Amplop Cinta'
+        };
+
+        // YouTube API & Player Instance
+        let ytPlayer = null;
+        let isYtApiReady = false;
+
+        function onYouTubeIframeAPIReady() {
+            isYtApiReady = true;
+            initYouTubePlayer(appState.youtubeVideoId);
+        }
+
+        function initYouTubePlayer(videoId) {
+            if (!videoId || !window.YT || !window.YT.Player) return;
+            try {
+                if (ytPlayer) {
+                    ytPlayer.loadVideoById(videoId);
+                    ytPlayer.pauseVideo();
+                } else {
+                    ytPlayer = new YT.Player('youtubeAudioPlayer', {
+                        height: '0',
+                        width: '0',
+                        videoId: videoId,
+                        playerVars: {
+                            'autoplay': 0,
+                            'controls': 0,
+                            'loop': 1,
+                            'playlist': videoId
+                        },
+                        events: {
+                            'onReady': onPlayerReady
+                        }
+                    });
+                }
+            } catch(e) {
+                console.log('YouTube initialization note:', e);
+            }
+        }
+
+        function onPlayerReady(event) {
+            // Player ready callback
+        }
+
+        // Extract Video ID from YouTube URL
+        function extractYouTubeId(url) {
+            if (!url) return null;
+            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+            const match = url.match(regExp);
+            return (match && match[2].length === 11) ? match[2] : null;
+        }
+
+        // Open Emote Event
+        function selectAndOpenEmote(emoteKey, emoteTitle) {
+            appState.currentActiveEmote = emoteKey;
+            appState.currentActiveEmoteTitle = emoteTitle;
+
+            const iconMap = {
+                'envelope': '💌',
+                'gift': '🎁',
+                'heart': '💖'
+            };
+
+            document.getElementById('cardEmoteHeaderIcon').innerText = iconMap[emoteKey] || '💌';
+            document.getElementById('cardEmoteHeaderTitle').innerText = emoteTitle.split(' ')[1] || 'Spesial';
+
+            // Show Opened Card View
+            document.getElementById('homeSection').classList.add('hidden');
+            document.getElementById('openedCardSection').classList.remove('hidden');
+
+            // Trigger Confetti Celebration
+            try {
+                confetti({
+                    particleCount: 90,
+                    spread: 80,
+                    origin: { y: 0.6 },
+                    colors: ['#f472b6', '#fb7185', '#c084fc', '#f43f5e']
+                });
+            } catch(e) {
+                console.log('Confetti effect info:', e);
+            }
+
+            // Start Music Automatically
+            playMusic();
+        }
+
+        // Reset to Main Home View
+        function resetToHome() {
+            stopMusic();
+            document.getElementById('openedCardSection').classList.add('hidden');
+            document.getElementById('homeSection').classList.remove('hidden');
+        }
+
+        // Playback Control Functions
+        function playMusic() {
+            appState.isPlaying = true;
+            updateMusicButtonUI(true);
+
+            if (appState.musicSourceType === 'youtube') {
+                const localAudio = document.getElementById('localAudioPlayer');
+                localAudio.pause();
+                
+                if (ytPlayer && typeof ytPlayer.playVideo === 'function') {
+                    ytPlayer.playVideo();
+                } else if (appState.youtubeVideoId) {
+                    initYouTubePlayer(appState.youtubeVideoId);
+                    setTimeout(() => {
+                        if (ytPlayer && typeof ytPlayer.playVideo === 'function') ytPlayer.playVideo();
+                    }, 1000);
+                }
+            } else if (appState.musicSourceType === 'file' && appState.localAudioUrl) {
+                if (ytPlayer && typeof ytPlayer.pauseVideo === 'function') {
+                    ytPlayer.pauseVideo();
+                }
+                const localAudio = document.getElementById('localAudioPlayer');
+                localAudio.src = appState.localAudioUrl;
+                localAudio.play().catch(e => console.log('Autoplay prevented:', e));
+            }
+        }
+
+        function stopMusic() {
+            appState.isPlaying = false;
+            updateMusicButtonUI(false);
+
+            if (ytPlayer && typeof ytPlayer.pauseVideo === 'function') {
+                ytPlayer.pauseVideo();
+            }
+            const localAudio = document.getElementById('localAudioPlayer');
+            localAudio.pause();
+        }
+
+        function toggleMusicPlayback() {
+            if (appState.isPlaying) {
+                stopMusic();
+                showToast("Musik dijeda ⏸️");
+            } else {
+                playMusic();
+                showToast("Memutar musik 🎵");
+            }
+        }
+
+        function updateMusicButtonUI(playing) {
+            const btn = document.getElementById('musicToggleButton');
+            const icon = document.getElementById('musicIcon');
+            if (!btn || !icon) return;
+
+            if (playing) {
+                icon.className = "fa-solid fa-volume-high text-pink-300 animate-pulse";
+                btn.classList.add('bg-pink-500/40', 'border-pink-300', 'ring-2', 'ring-pink-300/50');
+            } else {
+                icon.className = "fa-solid fa-music";
+                btn.classList.remove('bg-pink-500/40', 'border-pink-300', 'ring-2', 'ring-pink-300/50');
+            }
+        }
+
+        // Modal Customization Controls & Dual Tabs
+        function openSettingsModal() {
+            document.getElementById('modalTitleInput').value = appState.title;
+            document.getElementById('modalSenderInput').value = appState.sender;
+            document.getElementById('modalMessageInput').value = appState.message;
+            document.getElementById('modalYoutubeInput').value = appState.youtubeUrl;
+
+            document.getElementById('settingsModal').classList.remove('hidden');
+        }
+
+        function closeSettingsModal() {
+            document.getElementById('settingsModal').classList.add('hidden');
+        }
+
+        // Switch Background Tabs
+        function switchBgTab(tab) {
+            const tabUpload = document.getElementById('bgTabUpload');
+            const tabPreset = document.getElementById('bgTabPreset');
+            const optUpload = document.getElementById('bgOptionUpload');
+            const optPreset = document.getElementById('bgOptionPreset');
+
+            if (tab === 'upload') {
+                tabUpload.className = "pb-2 font-medium text-pink-600 border-b-2 border-pink-500";
+                tabPreset.className = "pb-2 font-medium text-slate-400 hover:text-slate-600";
+                optUpload.classList.remove('hidden');
+                optPreset.classList.add('hidden');
+            } else {
+                tabPreset.className = "pb-2 font-medium text-pink-600 border-b-2 border-pink-500";
+                tabUpload.className = "pb-2 font-medium text-slate-400 hover:text-slate-600";
+                optPreset.classList.remove('hidden');
+                optUpload.classList.add('hidden');
+            }
+        }
+
+        // Switch Music Tabs
+        function switchMusicTab(tab) {
+            const tabYt = document.getElementById('musicTabYoutube');
+            const tabFile = document.getElementById('musicTabFile');
+            const optYt = document.getElementById('musicOptionYoutube');
+            const optFile = document.getElementById('musicOptionFile');
+
+            if (tab === 'youtube') {
+                appState.musicSourceType = 'youtube';
+                tabYt.className = "pb-2 font-medium text-pink-600 border-b-2 border-pink-500";
+                tabFile.className = "pb-2 font-medium text-slate-400 hover:text-slate-600";
+                optYt.classList.remove('hidden');
+                optFile.classList.add('hidden');
+            } else {
+                appState.musicSourceType = 'file';
+                tabFile.className = "pb-2 font-medium text-pink-600 border-b-2 border-pink-500";
+                tabYt.className = "pb-2 font-medium text-slate-400 hover:text-slate-600";
+                optFile.classList.remove('hidden');
+                optYt.classList.add('hidden');
+            }
+        }
+
+        // Background File & URL Handlers
+        function handleModalBgUpload(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(evt) {
+                    appState.bgImage = evt.target.result;
+                    document.getElementById('modalUploadBgLabel').innerText = `Terpilih: ${file.name}`;
+                    showToast("Foto latar berhasil diunggah!");
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function selectPresetModalBg(url) {
+            appState.bgImage = url;
+            showToast("Preset foto latar terpilih!");
+        }
+
+        function applyUrlBg(url) {
+            if (url && url.startsWith('http')) {
+                appState.bgImage = url;
+                showToast("URL Foto diterapkan!");
+            }
+        }
+
+        // Audio Local File Handler
+        function handleModalAudioUpload(e) {
+            const file = e.target.files[0];
+            if (file) {
+                appState.localAudioUrl = URL.createObjectURL(file);
+                appState.localAudioFileName = file.name;
+                appState.musicSourceType = 'file';
+                document.getElementById('modalUploadAudioLabel').innerText = `Lagu: ${file.name}`;
+                showToast("File lagu MP3 berhasil diunggah!");
+            }
+        }
+
+        // Save Settings & Update DOM Instant
+        function saveSettingsModal() {
+            const titleInput = document.getElementById('modalTitleInput').value.trim();
+            const senderInput = document.getElementById('modalSenderInput').value.trim();
+            const messageInput = document.getElementById('modalMessageInput').value.trim();
+            const ytUrlInput = document.getElementById('modalYoutubeInput').value.trim();
+
+            if (titleInput) appState.title = titleInput;
+            if (senderInput) appState.sender = senderInput;
+            if (messageInput) appState.message = messageInput;
+
+            if (appState.musicSourceType === 'youtube' && ytUrlInput) {
+                appState.youtubeUrl = ytUrlInput;
+                const ytId = extractYouTubeId(ytUrlInput);
+                if (ytId) {
+                    appState.youtubeVideoId = ytId;
+                    initYouTubePlayer(ytId);
+                }
+            }
+
+            // Update Card Preview DOM elements
+            document.getElementById('cardDisplayTitle').innerText = appState.title;
+            document.getElementById('cardDisplaySender').innerText = appState.sender.startsWith('~') ? appState.sender : `~ ${appState.sender}`;
+            document.getElementById('cardDisplayMessage').innerText = `"${appState.message}"`;
+            document.getElementById('cardBgImage').src = appState.bgImage;
+
+            closeSettingsModal();
+            showToast("Pengaturan berhasil disimpan!");
+
+            // Restart music with new settings if currently open
+            if (!document.getElementById('openedCardSection').classList.contains('hidden')) {
+                playMusic();
+            }
+        }
+
+        // Share Card Link Simulation
+        function shareCardLink() {
+            const dummyUrl = window.location.href.split('?')[0] + "?spesial=1";
+            const textArea = document.createElement("textarea");
+            textArea.value = dummyUrl;
+            document.body.appendChild(textArea);
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                showToast("Link pesan berhasil disalin ke clipboard!");
+            } catch (err) {
+                showToast("Gagal menyalin link");
+            }
+            document.body.removeChild(textArea);
+        }
+
+        // Toast Notification System
+        function showToast(msg) {
+            const oldToast = document.getElementById('appToast');
+            if (oldToast) oldToast.remove();
+
+            const toast = document.createElement('div');
+            toast.id = 'appToast';
+            toast.className = 'fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50 bg-slate-900/90 text-white text-xs md:text-sm px-5 py-3 rounded-2xl shadow-xl backdrop-blur-md flex items-center space-x-2 border border-white/20 animate-fade-in';
+            toast.innerHTML = `<i class="fa-solid fa-sparkles text-pink-400"></i><span>${msg}</span>`;
+            
+            document.body.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transition = 'opacity 0.4s ease';
+                setTimeout(() => toast.remove(), 400);
+            }, 2800);
+        }
+
+        // Initialize Default Values on Load
+        window.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('cardDisplayTitle').innerText = appState.title;
+            document.getElementById('cardDisplaySender').innerText = appState.sender;
+            document.getElementById('cardDisplayMessage').innerText = `"${appState.message}"`;
+            document.getElementById('cardBgImage').src = appState.bgImage;
+        });
+    </script>
+</body>
+</html>
